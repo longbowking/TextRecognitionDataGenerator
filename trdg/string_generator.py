@@ -49,16 +49,18 @@ def create_strings_from_wikipedia(minimum_length, count, lang):
     """
         Create all string by randomly picking Wikipedia articles and taking sentences from them.
     """
+    if lang == 'cn':
+        lang = 'zh'
+    proxies = os.environ.get('TRDG_PROXY', default='{}')
+    proxies = json.loads(proxies)
+
     sentences = []
 
     while len(sentences) < count:
         # We fetch a random page
-        if lang == 'cn':
-            lang = 'zh'
-        proxies = os.environ.get('TRDG_PROXY', default='{}')
-        proxies = json.loads(proxies)
-
-        page = requests.get("https://{}.wikipedia.org/wiki/Special:Random".format(lang), proxies=proxies)
+        page = requests.get(
+            f"https://{lang}.wikipedia.org/wiki/Special:Random",
+            proxies=proxies)
 
         soup = BeautifulSoup(page.text, "html.parser")
 
@@ -69,8 +71,8 @@ def create_strings_from_wikipedia(minimum_length, count, lang):
         lines = list(
             filter(
                 lambda s: len(s.split(" ")) > minimum_length
-                and not "Wikipedia" in s
-                and not "wikipedia" in s,
+                          and not "Wikipedia" in s
+                          and not "wikipedia" in s,
                 [
                     " ".join(re.findall(r"[\w']+", s.strip()))[0:200]
                     for s in soup.get_text().splitlines()
