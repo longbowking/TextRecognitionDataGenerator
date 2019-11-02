@@ -1,3 +1,6 @@
+import json
+import os
+
 import random as rnd
 import re
 import string
@@ -52,7 +55,10 @@ def create_strings_from_wikipedia(minimum_length, count, lang):
         # We fetch a random page
         if lang == 'cn':
             lang = 'zh'
-        page = requests.get("https://{}.wikipedia.org/wiki/Special:Random".format(lang))
+        proxies = os.environ.get('TRDG_PROXY', default='{}')
+        proxies = json.loads(proxies)
+
+        page = requests.get("https://{}.wikipedia.org/wiki/Special:Random".format(lang), proxies=proxies)
 
         soup = BeautifulSoup(page.text, "html.parser")
 

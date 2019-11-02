@@ -148,6 +148,18 @@ There are a lot of parameters that you can tune to get the results you want, the
 
 It is simple! Just do `trdg -l cn -c 1000 -w 5`!
 
+Note:
+In mainland China, you may need proxy to generate from wikipedia pages.
+To specify proxies to retrieve wikipedia webpage, you have to specify a 
+usable proxy rule for python `requests` module, for example:
+```bash
+TRDG_PROXY='{"http": "socks5://127.0.0.1:1080", "https": "socks5://127.0.0.1:1080"}'
+trdg -l cn -c 10 -w 2 -wk -na 2
+```
+for more detils, refer to proxy support documentation:
+`https://requests.readthedocs.io/en/master/user/advanced/#socks`
+
+
 Generated texts come both in simplified and traditional Chinese scripts.
 
 Traditional:
