@@ -1,10 +1,12 @@
 import json
 import os
+import random
 
 import random as rnd
 import re
 import string
 import requests
+import urllib
 
 from bs4 import BeautifulSoup
 
@@ -61,6 +63,7 @@ def create_strings_from_wikipedia(minimum_length, count, lang):
         page = requests.get(
             f"https://{lang}.wikipedia.org/wiki/Special:Random",
             proxies=proxies)
+        print(f'Retriving page {urllib.parse.unquote(page.url)}')
 
         soup = BeautifulSoup(page.text, "html.parser")
 
@@ -72,17 +75,26 @@ def create_strings_from_wikipedia(minimum_length, count, lang):
             filter(
                 lambda s: len(s.split(" ")) > minimum_length
                           and not "Wikipedia" in s
-                          and not "wikipedia" in s,
+                          and not "wikipedia" in s
+                          and not '维基百科' in s,
                 [
                     " ".join(re.findall(r"[\w']+", s.strip()))[0:200]
                     for s in soup.get_text().splitlines()
                 ],
             )
         )
+        # todo: restrict on the max number of sentences from a single page
+        # todo: use a simplified chinese dictionary to filter pages
 
         # Remove the last lines that talks about contributing
         sentences.extend(lines[0 : max([1, len(lines) - 5])])
 
+    if lang in ('cn', 'zh'):
+        # restrict max length of chinese textline
+        sentences = [
+            s[:random.randint(1, 50)]
+            for s in sentences
+        ]
     return sentences[0:count]
 
 
